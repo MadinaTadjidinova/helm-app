@@ -1,0 +1,32 @@
+name: Nightly Terraform Reconciliation
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: <version>
+
+      - name: Configure Google Cloud credentials
+        uses: google-github-actions/setup-gcloud@v0.3.0
+        with:
+          service_account_key: ${{ secrets.GOOGLE_CLOUD_CREDENTIALS }}
+
+      - name: Initialize Terraform
+        run: terraform init
+
+      - name: Terraform Refresh
+        run: terraform refresh
+
+      - name: Terraform Plan
+        run: terraform plan
